@@ -18,6 +18,9 @@ using namespace std;
 #define CONF_MAX_LINE_NUM 256
 
 
+const string RegexConfVersion = "RegexConf Version: V0.0.0 (2021-04-13 16:11)";
+
+
 class RegexConf
 {
 private:

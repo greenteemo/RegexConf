@@ -128,9 +128,7 @@ int RegexConf::GetAllConf()
 		ret = regexec(&m_regex, line, m_regex.re_nsub+1, m_regexmatch, 0);
 		if(ret)
 		{
-			regerror(ret, &m_regex, errbuff, sizeof(errbuff));
-			printf("[RegexConf] ERROR PATTERN:[%s] ERROR STRING:[%s] ERROR REASON:[%s]\n", m_regex_pattern, line, errbuff);
-			return RET_FAILURE;
+			continue;	// 不匹配，跳过改行
 		}
 
 		string key = GetRegexmatch(1, line);
@@ -190,57 +188,5 @@ unsigned int getFileLastModifiedTime(const string filename)
 	if( result != 0 )
 		perror( "Cannot get file last modified time!" );
 
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	fprintf(stderr, "[%lu] 当前时间: [%ld.%ld]; 最后修改日期: %u %s", pthread_self(), tv.tv_sec, tv.tv_usec, buf.st_mtime, ctime(&buf.st_mtime));
-
 	return buf.st_mtime;
 }
-
-
-// 以下为测试代码
-/*
-void* read_thread(void* self)
-{
-	RegexConf *regexConf = (RegexConf*)self;
-	
-	while (1)
-        {
-                struct timeval tv;
-                gettimeofday(&tv, NULL);
-                printf("线程:[%lu] 当前时间:[%ld.%ld] a:[%s] b:[%s] c:[%s] d:[%s]\n", pthread_self(), tv.tv_sec, tv.tv_usec, regexConf->GetConfValue("a").c_str(), regexConf->GetConfValue("b").c_str(), regexConf->GetConfValue("c").c_str(), regexConf->GetConfValue("d").c_str());
-                usleep(100);
-        }
-
-	return NULL;
-}
-
-
-int main()
-{
-        RegexConf *regexConf = new RegexConf("./test.conf", "^[ ]*([^#\n]*?)[ ]*=[ ]*([^\n ]*?)[ ]*$");
-
-	pthread_attr_t attr;
-        pthread_attr_init(&attr);
-        pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
-        pthread_attr_setstacksize(&attr, 40 * 1024 * 1024);
-	
-	pthread_t thread_handle;
-
-	for (int i = 0; i < 10; ++i)
-	{
-	        if (pthread_create(&thread_handle, &attr, read_thread, (void*)regexConf) != 0)
-        	{
-                	fprintf(stderr, "[RegexConf] Failed to create detect config thread handle!\n");
-               		 return EXIT_FAILURE;
-        	}
-	}
-
-	while (1)
-	{
-		sleep(100);
-	}
-
-        return 0;
-}
-*/
